@@ -1,0 +1,47 @@
+# ==========================================================
+# conf.yaml
+# ==========================================================
+
+ensemble:
+  name: "ensemble_final_2"
+  output_dir: "~/buckets/b1/ensemble_final_2"
+  
+  semillas: [
+    600011, 600043, 600053, 600071, 600073]
+    #600091, 600107, 600109, 600113, 600137,
+    #600169, 600179, 600191, 600193, 600197,
+    #600209, 600211, 600221, 600227, 600253,
+    #600257, 600259, 600263, 600281, 600293
+  #]
+
+test:
+  MES_TEST_1: ["202105"]
+  MES_TEST_2: ["202106"]
+  GANANCIA_ACIERTO: 780000
+  COSTO_ESTIMULO: 20000
+
+# Modelos a ensamblar
+models:
+  - study_name: "1311_7"
+    study_db: "~/buckets/b1/optuna_db/1311_7.db"
+    config_dir: "~/sky_dmeyf/1311_7"
+    
+  - study_name: "1411_2"
+    study_db: "~/buckets/b1/optuna_db/1411_2.db"
+    config_dir: "~/sky_dmeyf/1411_2"
+    
+  - study_name: "1411_3"
+    study_db: "~/buckets/b1/optuna_db/1411_3.db"
+    config_dir: "~/sky_dmeyf/1411_3"
+    
+  - study_name: "1511_1"
+    study_db: "~/buckets/b1/optuna_db/1511_1.db"
+    config_dir: "~/sky_dmeyf/1511_1"
+    
+  - study_name: "1511_2"
+    study_db: "~/buckets/b1/optuna_db/1511_2.db"
+    config_dir: "~/sky_dmeyf/1511_2"
+  
+  - study_name: "1511_3"
+    study_db: "~/buckets/b1/optuna_db/1511_3.db"
+    config_dir: "~/sky_dmeyf/1511_3"

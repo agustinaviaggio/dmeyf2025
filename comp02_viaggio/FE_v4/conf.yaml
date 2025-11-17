@@ -1,0 +1,43 @@
+# ==========================================================
+# conf.yaml
+# ==========================================================
+
+# Parámetros Globales (Directamente mapeados a variables en config.py)
+STUDY_NAME: "1411_1"
+
+configuracion:
+    # Ruta al archivo de datos de entrada
+    DATA_PATH_OPT: "~/data/competencia_02_FE_v4.parquet"
+    #DATA_PATH_OPT: "~/data/competencia_01_FE_v1.parquet"
+    DATA_PATH_FE: "~/buckets/b1/datasets/competencia_02_crudo.csv.gz"
+    OUTPUT_PATH_FE: "~/buckets/b1/datasets/competencia_02_FE_v4.parquet"
+    BUCKET_NAME: "~/buckets/b1/"
+    SQL_TABLE_NAME: "tabla_sql"
+    SEMILLAS: [600011, 600043, 600053, 600071, 600073]
+    
+    # Períodos para Time Series CV (NO incluir test)
+    PERIODOS_TRAIN: ["201901","201902","201903","201904","201906",
+                     "201907","201908","201909","201911","201912",
+                     "202001","202002","202003","202004","202005","202007",
+                     "202008","202009","202010","202011","202012",
+                     "202101","202102","202103","202104"]
+    
+    # Períodos de test
+    MES_TEST_1: ["202105"]
+    MES_TEST_2: ["202106"]
+    
+    # Ganancias
+    GANANCIA_ACIERTO: 780000
+    COSTO_ESTIMULO: 20000
+    
+    # Time Series Cross Validation - EXPANDING con muchos datos
+    N_SPLITS: 5
+    CV_STRATEGY: "expanding"
+    MIN_TRAIN_SIZE: 12  
+    VALIDATION_SIZE: 1
+    GAP: 0
+    UNDERSAMPLING_RATIO: 0.10
+    
+    # Legacy (si los necesitás para otras cosas)
+    FINAL_TRAIN: ["202008","202010", "202011", "202012", "202101","202102"] 
+    FINAL_PREDICT: "202104"

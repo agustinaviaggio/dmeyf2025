@@ -1,0 +1,32 @@
+# ==========================================================
+# conf.yaml
+# ==========================================================
+
+# Parámetros Globales (Directamente mapeados a variables en config.py)
+STUDY_NAME: "1011_2"
+
+configuracion:
+    # Ruta al archivo de datos de entrada
+    DATA_PATH_OPT: "~/data/competencia_02_FE_v2.parquet"
+    #DATA_PATH_OPT: "~/data/competencia_01_FE_v1.parquet"
+    DATA_PATH_FE: "~/buckets/b1/datasets/competencia_02_crudo.csv.gz"
+    OUTPUT_PATH_FE: "~/buckets/b1/datasets/competencia_02_FE_v2.parquet"
+    BUCKET_NAME: "~/buckets/b1/"
+    SQL_TABLE_NAME: "tabla_sql"
+    #SEMILLAS: [600011, 600043, 600053, 600071, 600073]
+    SEMILLAS: [
+        600011, 600043, 600053, 600071, 600073,
+        600091, 600107, 600109, 600113, 600137,
+        600169, 600179, 600191, 600193, 600197,
+        600209, 600211, 600221, 600227, 600253,
+        600257, 600259, 600263, 600281, 600293,
+        600301, 600307, 600317, 600329, 600343,
+        600347, 600377, 600389, 600391, 600401,
+        600413, 600427, 600437, 600443, 600463
+        ]
+    MESES_TRAIN: "202102"
+    MES_VALIDACION: "202103"
+    MES_TEST_1: "202104"
+    MES_TEST_2: "202106"
+    GANANCIA_ACIERTO: 780000
+    COSTO_ESTIMULO: 20000

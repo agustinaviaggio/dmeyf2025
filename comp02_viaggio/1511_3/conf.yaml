@@ -1,0 +1,51 @@
+# ==========================================================
+# conf.yaml
+# ==========================================================
+
+# Parámetros Globales (Directamente mapeados a variables en config.py)
+STUDY_NAME: "1511_3"
+
+configuracion:
+    # Ruta al archivo de datos de entrada
+    DATA_PATH_OPT: "~/data/competencia_02_FE_v4.parquet"
+    #DATA_PATH_OPT: "~/data/competencia_01_FE_v1.parquet"
+    DATA_PATH_FE: "~/buckets/b1/datasets/competencia_02_crudo.csv.gz"
+    OUTPUT_PATH_FE: "~/buckets/b1/datasets/competencia_02_FE_v4.parquet"
+    BUCKET_NAME: "~/buckets/b1/"
+    SQL_TABLE_NAME: "tabla_sql"
+    SEMILLAS: [600011, 600043, 600053, 600071, 600073]
+    
+    # Períodos para Time Series CV (NO incluir test)
+    PERIODOS_CLASE_1: ["201901","201902","201903","201904","201906",
+                       "201907","201908","201909","201911","201912",
+                       "202001","202002","202003","202004","202005","202007",
+                       "202008","202009","202010","202011","202012",
+                       "202101","202102","202103","202104","202105","202106"]
+    
+    # Períodos para entrenamiento - CLASE 0 (con undersampling)
+    PERIODOS_CLASE_0: ["201901","201902","201903","201904","201906",
+                       "201907","201908","201909","201911","201912",
+                       "202001","202002","202003","202004","202005","202007",
+                       "202008","202009","202010","202011","202012",
+                       "202101","202102","202103","202104","202105","202106"]
+    
+    # Períodos de test
+    MES_TEST_1: ["202105"]
+    MES_TEST_2: ["202106"]
+    
+    # Ganancias
+    GANANCIA_ACIERTO: 780000
+    COSTO_ESTIMULO: 20000
+    
+    # Cross Validation - 5-Fold estándar
+    N_SPLITS: 5
+    UNDERSAMPLING_RATIO: 0.10
+    
+    # Legacy (para compatibilidad)
+    PERIODOS_TRAIN: ["201901","201902","201903","201904","201906",
+                     "201907","201908","201909","201911","201912",
+                     "202001","202002","202003","202004","202005","202007",
+                     "202008","202009","202010","202011","202012",
+                     "202101","202102","202103","202104"]
+    FINAL_TRAIN: ["202008","202010", "202011", "202012", "202101","202102"] 
+    FINAL_PREDICT: "202104"
