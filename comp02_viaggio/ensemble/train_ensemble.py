@@ -107,6 +107,44 @@ class EnsembleTrainer:
         
         return model_config
     
+    def get_all_training_periods(self, model_config: dict) -> List[int]:
+        """
+        Obtiene TODOS los períodos de entrenamiento: train + test1 + test2
+        
+        Parameters:
+        -----------
+        model_config : dict
+            Configuración del modelo
+        
+        Returns:
+        --------
+        List[int]
+            Lista de períodos ordenados para entrenamiento
+        """
+        # Detectar períodos de train según estrategia
+        if 'PERIODOS_TRAIN' in model_config:
+            periodos_train = model_config['PERIODOS_TRAIN']
+        elif 'PERIODOS_CLASE_1' in model_config:
+            periodos_train = model_config['PERIODOS_CLASE_1']
+        else:
+            raise ValueError("No se encontró configuración de períodos de entrenamiento")
+        
+        # Obtener períodos de test
+        periodos_test = []
+        if 'MES_TEST_1' in model_config:
+            periodos_test.extend(model_config['MES_TEST_1'])
+        if 'MES_TEST_2' in model_config:
+            periodos_test.extend(model_config['MES_TEST_2'])
+        
+        # Combinar y ordenar
+        all_periodos = sorted(set(periodos_train + periodos_test))
+        
+        logger.info(f"Períodos train originales: {periodos_train}")
+        logger.info(f"Períodos test: {periodos_test}")
+        logger.info(f"Períodos totales para entrenamiento: {all_periodos}")
+        
+        return all_periodos
+    
     def prepare_undersampled_data(
         self,
         conn: duckdb.DuckDBPyConnection,
@@ -115,26 +153,28 @@ class EnsembleTrainer:
     ) -> Tuple[np.ndarray, np.ndarray, List[str]]:
         """
         Prepara dataset con undersampling UNA vez con seed fija.
+        Ahora incluye períodos de train + test1 + test2
         
         Returns:
             Tuple[X, y, feature_cols]
         """
-        # Detectar estrategia y períodos
-        if 'PERIODOS_TRAIN' in model_config:
-            periodos = model_config['PERIODOS_TRAIN']
-            ratio = model_config.get('UNDERSAMPLING_RATIO') or model_config.get('UNDERSAMPLING_RATIO_tscv')
-        elif 'PERIODOS_CLASE_1' in model_config:
-            periodos = model_config['PERIODOS_CLASE_1']
+        # Obtener TODOS los períodos (train + test)
+        periodos = self.get_all_training_periods(model_config)
+        
+        # Detectar ratio de undersampling
+        if 'UNDERSAMPLING_RATIO' in model_config:
             ratio = model_config['UNDERSAMPLING_RATIO']
+        elif 'UNDERSAMPLING_RATIO_tscv' in model_config:
+            ratio = model_config['UNDERSAMPLING_RATIO_tscv']
         else:
-            raise ValueError("No se encontró configuración de períodos")
+            raise ValueError("No se encontró configuración de UNDERSAMPLING_RATIO")
         
         periodos_str = ','.join(map(str, periodos))
         
         # Query SIMPLE: traer TODO
         query = f"SELECT * FROM {table_name} WHERE foto_mes IN ({periodos_str})"
         
-        logger.info(f"Cargando datos para undersampling...")
+        logger.info(f"Cargando datos para undersampling de {len(periodos)} períodos...")
         data = conn.execute(query).fetchnumpy()
         
         # Hacer undersampling EN PYTHON con seed fija
@@ -275,8 +315,8 @@ class EnsembleTrainer:
                 logger.info(f"Extrayendo mejores hiperparámetros...")
                 best_params, best_iteration = self.get_best_params(local_db, study_name)
                 
-                # 5. Preparar dataset con undersampling UNA vez
-                logger.info(f"Preparando dataset con undersampling...")
+                # 5. Preparar dataset con undersampling UNA vez (ahora incluye test)
+                logger.info(f"Preparando dataset con undersampling (train + test)...")
                 X, y, feature_cols = self.prepare_undersampled_data(
                     conn, table_name, model_config
                 )
