@@ -198,7 +198,7 @@ def main():
 
         # 6. Evaluación en TEST 1
         logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST 1 ===")
-        '''resultados_test = evaluar_en_test(
+        resultados_test = evaluar_en_test(
             conn, 
             SQL_TABLE_NAME, 
             study, 
@@ -221,7 +221,7 @@ def main():
         guardar_resultados_test(resultados_test, MES_TEST_2)
         logger.info("=== RESUMEN DE EVALUACIÓN EN TEST 2 ===")
         logger.info(f"Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
-        '''
+        
         # 8. ENTRENAR Y GUARDAR MODELOS FINALES (con TRAIN + TEST_2)
         logger.info("=== ENTRENAMIENTO FINAL CON TRAIN + TEST_2 ===")
         ensemble_info = entrenar_y_guardar_modelos_finales(conn, SQL_TABLE_NAME, study)

@@ -23,14 +23,12 @@ STUDY_NAME = "2511_2"
 SQL_TABLE_NAME = "dataset_competencia"
 DATA_PATH = "gs://sra_electron_bukito3/datasets/competencia_03_FE_v4.parquet"
 
-# Períodos de entrenamiento (todos los meses del conf.yaml)
 PERIODOS_TRAIN = [201901, 201902, 201903, 201904, 201906,
                   201907, 201908, 201909, 201911, 201912,
                   202001, 202002, 202003, 202004, 202005, 202007,
                   202008, 202009, 202010, 202011, 202012,
                   202101, 202102, 202103, 202104, 202105, 202106]
 
-# Semillas del conf.yaml
 SEMILLAS = [600011, 600043, 600053, 600071, 600073,
             600091, 600107, 600109, 600113, 600137,
             600169, 600179, 600191, 600193, 600197,
@@ -82,7 +80,6 @@ def cargar_dataset(conn):
 
 def descargar_db_optuna():
     """Descarga la base de datos de Optuna desde GCS."""
-    # Usar directorio temporal
     with tempfile.NamedTemporaryFile(mode='w', suffix='.db', delete=False) as tmp:
         db_file = tmp.name
     
