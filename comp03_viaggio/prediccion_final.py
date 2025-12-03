@@ -50,9 +50,8 @@ def refrescar_credenciales_gcs():
 
 
 def cargar_features_por_estudio(study_name, bucket_name):
-    """Carga las features que usó un estudiO."""
+    """Carga las features EN EL ORDEN EXACTO que usó un estudio."""
     
-    # Primero intentar cargar metadata de features
     try:
         refrescar_credenciales_gcs()
         
@@ -63,7 +62,7 @@ def cargar_features_por_estudio(study_name, bucket_name):
             text=True,
             timeout=30
         )
-        
+
         if result.returncode == 0:
             archivos = result.stdout.strip().split('\n')
             if archivos and archivos[0]:
@@ -84,19 +83,21 @@ def cargar_features_por_estudio(study_name, bucket_name):
                     with open(tmp_path, 'r') as f:
                         metadata = json.load(f)
                     
+                    # ACA ESTÁ LA CLAVE: mantener el orden exacto del entrenamiento
                     features = metadata['features']
-                    logger.info(f"  ✓ Cargadas {len(features)} features específicas del estudio")
+                    logger.info(f"  ✓ Cargadas {len(features)} features (orden exacto)")
                     return features
-                    
+
                 finally:
                     if os.path.exists(tmp_path):
                         os.unlink(tmp_path)
-        
+
     except Exception as e:
         logger.info(f"  No se encontraron features específicas ({e})")
     
-    logger.info(f"  Se usarán todas las features disponibles")
+    logger.info(f"  Se usarán todas las features disponibles (sin metadata)")
     return None
+
 
 
 def descargar_modelos_estudio(study_name, bucket_name):
@@ -209,33 +210,42 @@ def cargar_datos_prediccion(mes_prediccion):
 
 
 def predecir_ensemble_estudio(modelos, X, feature_cols, study_name, bucket_name):
-    """Predice con un ensemble de modelos."""
+    """Predice con un ensemble de modelos, respetando el ORDEN EXACTO
+       de features usado en el entrenamiento del estudio."""
+    
     logger.info(f"  Verificando features del estudio...")
-    
-    # Cargar features específicas del estudio
+
+    # Cargar las features en el orden EXACTO en que se entrenó
     features_estudio = cargar_features_por_estudio(study_name, bucket_name)
-    
+
     if features_estudio is not None:
-        # Filtrar X solo con las features que usó este estudio
-        indices_features = [i for i, col in enumerate(feature_cols) if col in features_estudio]
+        # Mapear columnas del parquet a las columnas EXACTAS del modelo
+        try:
+            indices_features = [feature_cols.index(f) for f in features_estudio]
+        except ValueError as e:
+            logger.error(f"ERROR: Falta una feature del estudio en el parquet: {e}")
+            raise
+
         X_filtrado = X[:, indices_features]
-        logger.info(f"  Usando {len(indices_features)} features del estudio")
+        logger.info(f"  Usando {len(indices_features)} features del estudio (orden respetado).")
+
     else:
+        # Sin metadata: usar todas las features en el orden encontrado en el parquet
         X_filtrado = X
-        logger.info(f"  Usando todas las features ({X.shape[1]})")
-    
+        logger.info(f"  Usando todas las features ({X.shape[1]}) sin filtro (sin metadata).")
+
     logger.info(f"  Prediciendo con {len(modelos)} modelos...")
-    
+
     predicciones = []
     for modelo in modelos:
         pred = modelo.predict(X_filtrado)
         predicciones.append(pred)
-        gc.collect()
-    
-    # Promedio de todos los modelos
+
+    # Promedio de todos los modelos del estudio
     ensemble_pred = np.mean(predicciones, axis=0)
-    
+
     return ensemble_pred
+
 
 
 def generar_submission(probabilidades, numeros_cliente, threshold, n_envios, nombre_archivo):
