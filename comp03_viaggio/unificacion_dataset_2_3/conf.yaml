@@ -1,0 +1,12 @@
+# ==========================================================
+# conf.yaml
+# ==========================================================
+
+STUDY_NAME: "2011_1"
+
+configuracion:
+    DATA_PATH_ANT: "gs://sra_electron_bukito3/datasets/competencia_02_crudo.csv.gz"
+    DATA_PATH_FE: "gs://sra_electron_bukito3/datasets/competencia_03_crudo.csv.gz"
+    OUTPUT_PATH_FE: "gs://sra_electron_bukito3/datasets/competencia_03.parquet"
+    BUCKET_NAME: "~/buckets/b1/"
+    SQL_TABLE_NAME: "tabla_sql"
